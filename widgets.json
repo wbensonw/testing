@@ -1,0 +1,98 @@
+{
+    "widgets": [
+        {
+            "id": "google-search",
+            "title": "Google 搜尋",
+            "icon": "ri-search-line",
+            "description": "全球最大的搜尋引擎，提供網頁、圖片、新聞等多元搜尋服務。",
+            "url": "google.com",
+            "categories": ["工具", "常用"],
+            "priority": 1
+        },
+        {
+            "id": "chatgpt",
+            "title": "ChatGPT",
+            "icon": "ri-chat-3-line",
+            "description": "OpenAI 開發的 AI 對話助手，能夠理解和生成人類語言。",
+            "url": "chat.openai.com",
+            "categories": ["工具", "AI"],
+            "priority": 2
+        },
+        {
+            "id": "google-calendar",
+            "title": "Google 日曆",
+            "icon": "ri-calendar-line",
+            "description": "整合化的行程管理工具，支援多平台同步和共享功能。",
+            "url": "calendar.google.com",
+            "categories": ["工作", "工具"],
+            "priority": 3
+        },
+        {
+            "id": "youtube",
+            "title": "YouTube",
+            "icon": "ri-youtube-line",
+            "description": "全球最大的影片分享平台，提供教育、娛樂、音樂等多元化的視頻內容。",
+            "url": "youtube.com",
+            "categories": ["娛樂", "影音"],
+            "priority": 4
+        },
+        {
+            "id": "medium",
+            "title": "Medium",
+            "icon": "ri-medium-line",
+            "description": "優質的文章發布平台，匯集各領域專業作者的深度內容。",
+            "url": "medium.com",
+            "categories": ["學習", "閱讀"],
+            "priority": 5
+        },
+        {
+            "id": "github",
+            "title": "GitHub",
+            "icon": "ri-github-line",
+            "description": "全球最大的程式碼託管平台，開源社群的集中地。",
+            "url": "github.com",
+            "categories": ["工作", "開發"],
+            "priority": 6
+        }
+    ],
+    "categories": [
+        {
+            "id": "all",
+            "name": "全部",
+            "icon": "ri-apps-line"
+        },
+        {
+            "id": "tools",
+            "name": "工具",
+            "icon": "ri-tools-line"
+        },
+        {
+            "id": "work",
+            "name": "工作",
+            "icon": "ri-briefcase-line"
+        },
+        {
+            "id": "study",
+            "name": "學習",
+            "icon": "ri-book-open-line"
+        },
+        {
+            "id": "entertainment",
+            "name": "娛樂",
+            "icon": "ri-game-line"
+        },
+        {
+            "id": "life",
+            "name": "生活",
+            "icon": "ri-heart-line"
+        }
+    ],
+    "settings": {
+        "title": "網頁儀表板",
+        "description": "快速訪問您常用的網站",
+        "theme": {
+            "primary": "#FF9966",
+            "secondary": "#FFB088"
+        }
+    }
+}

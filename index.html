@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="網頁儀表板 - 快速訪問您常用的網站">
+    <meta name="theme-color" content="#FF9966">
+    <title>網頁儀表板</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="dashboard">
+        <header class="dashboard-header">
+            <h1 class="dashboard-title">網頁儀表板</h1>
+        </header>
+
+        <div class="search-container">
+            <i class="ri-search-line search-icon"></i>
+            <input type="search" class="search-box" placeholder="搜尋網站..." aria-label="搜尋網站">
+        </div>
+
+        <div class="category-filter" role="tablist">
+            <!-- 分類按鈕將由 JavaScript 動態生成 -->
+        </div>
+
+        <main class="grid-container">
+            <!-- Widgets 將由 JavaScript 動態生成 -->
+        </main>
+    </div>
+
+    <script type="module">
+        // 載入 widgets 數據
+        async function loadWidgetsData() {
+            try {
+                const response = await fetch('widgets.json');
+                return await response.json();
+            } catch (error) {
+                console.error('Error loading widgets data:', error);
+                return null;
+            }
+        }
+
+        // 創建 widget 元素
+        function createWidgetElement(widget) {
+            return `
+                <div class="widget" tabindex="0" role="button" 
+                     data-id="${widget.id}" 
+                     data-categories="${widget.categories.join(',')}">
+                    <div class="widget-header">
+                        <div class="widget-icon">
+                            <i class="${widget.icon}"></i>
+                        </div>
+                        <div class="widget-title">${widget.title}</div>
+                    </div>
+                    <div class="widget-content">
+                        <div class="widget-description">${widget.description}</div>
+                    </div>
+                    <div class="widget-footer">${widget.url}</div>
+                </div>
+            `;
+        }
+
+        // 創建分類按鈕
+        function createCategoryButton(category, isActive = false) {
+            return `
+                <button class="category-btn ${isActive ? 'active' : ''}" 
+                        role="tab" 
+                        aria-selected="${isActive}"
+                        data-category="${category.id}">
+                    <i class="${category.icon}"></i>
+                    ${category.name}
+                </button>
+            `;
+        }
+
+        // 初始化儀表板
+        async function initializeDashboard() {
+            const data = await loadWidgetsData();
+            if (!data) return;
+
+            // 設置標題和主題
+            document.title = data.settings.title;
+            document.querySelector('.dashboard-title').textContent = data.settings.title;
+            
+            // 生成分類按鈕
+            const categoryFilter = document.querySelector('.category-filter');
+            categoryFilter.innerHTML = data.categories
+                .map((category, index) => createCategoryButton(category, index === 0))
+                .join('');
+
+            // 生成 widgets
+            const container = document.querySelector('.grid-container');
+            const sortedWidgets = data.widgets.sort((a, b) => a.priority - b.priority);
+            container.innerHTML = sortedWidgets.map(createWidgetElement).join('');
+
+            // 添加事件監聽器
+            setupEventListeners(data);
+        }
+
+        // 設置事件監聽器
+        function setupEventListeners(data) {
+            // 搜索功能
+            const searchBox = document.querySelector('.search-box');
+            searchBox.addEventListener('input', debounce((e) => {
+                const searchTerm = e.target.value.toLowerCase();
+                filterWidgets(searchTerm, data);
+            }, 300));
+
+            // 分類過濾
+            const categoryButtons = document.querySelectorAll('.category-btn');
+            categoryButtons.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    categoryButtons.forEach(b => {
+                        b.classList.remove('active');
+                        b.setAttribute('aria-selected', 'false');
+                    });
+                    btn.classList.add('active');
+                    btn.setAttribute('aria-selected', 'true');
+                    
+                    const category = btn.dataset.category;
+                    filterWidgetsByCategory(category, data);
+                });
+            });
+
+            // Widget 點擊
+            document.querySelectorAll('.widget').forEach(widget => {
+                widget.addEventListener('click', () => {
+                    const url = widget.querySelector('.widget-footer').textContent;
+                    window.open(`https://${url}`, '_blank', 'noopener,noreferrer');
+                });
+            });
+
+            // 鍵盤快捷鍵
+            document.addEventListener('keydown', (e) => {
+                if (e.key === '/' && !e.target.matches('input, textarea')) {
+                    e.preventDefault();
+                    searchBox.focus();
+                }
+            });
+        }
+
+        // 防抖動函數
+        function debounce(func, wait) {
+            let timeout;
+            return function executedFunction(...args) {
+                const later = () => {
+                    clearTimeout(timeout);
+                    func(...args);
+                };
+                clearTimeout(timeout);
+                timeout = setTimeout(later, wait);
+            };
+        }
+
+        // 根據搜索詞過濾 widgets
+        function filterWidgets(searchTerm, data) {
+            const widgets = document.querySelectorAll('.widget');
+            widgets.forEach(widget => {
+                const title = widget.querySelector('.widget-title').textContent.toLowerCase();
+                const description = widget.querySelector('.widget-description').textContent.toLowerCase();
+                const isVisible = title.includes(searchTerm) || description.includes(searchTerm);
+                
+                widget.style.display = isVisible ? '' : 'none';
+                if (isVisible) {
+                    widget.classList.add('fade-enter');
+                    requestAnimationFrame(() => {
+                        widget.classList.add('fade-enter-active');
+                        setTimeout(() => {
+                            widget.classList.remove('fade-enter', 'fade-enter-active');
+                        }, 300);
+                    });
+                }
+            });
+        }
+
+        // 根據分類過濾 widgets
+        function filterWidgetsByCategory(categoryId, data) {
+            const widgets = document.querySelectorAll('.widget');
+            widgets.forEach(widget => {
+                const categories = widget.dataset.categories.split(',');
+                const shouldShow = categoryId === 'all' || categories.includes(categoryId);
+                
+                widget.style.display = shouldShow ? '' : 'none';
+                if (shouldShow) {
+                    widget.classList.add('fade-enter');
+                    requestAnimationFrame(() => {
+                        widget.classList.add('fade-enter-active');
+                        setTimeout(() => {
+                            widget.classList.remove('fade-enter', 'fade-enter-active');
+                        }, 300);
+                    });
+                }
+            });
+        }
+
+        // 初始化
+        document.addEventListener('DOMContentLoaded', initializeDashboard);
+    </script>
+</body>
+</html>
