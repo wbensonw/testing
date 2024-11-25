@@ -61,13 +61,18 @@
                             <div class="paper-authors">${paper.authors.join(', ')}</div>
                             <div class="paper-journal">${paper.journal}</div>
                         </div>
-                        <div class="paper-citation">
-                            <strong>引用格式 (APA):</strong>
-                            <p>${paper.citation}</p>
+                        <div class="paper-keywords">
+                            ${paper.keywords.map(keyword => `
+                                <span class="keyword">${keyword}</span>
+                            `).join('')}
                         </div>
                         <div class="paper-abstract hidden">
                             <strong>摘要:</strong>
                             <p>${paper.abstract}</p>
+                        </div>
+                        <div class="paper-citation" onclick="copyCitation(this, '${paper.citation.replace(/'/g, "\\'")}')">
+                            <strong>引用格式 (APA):</strong>
+                            <p>${paper.citation}</p>
                         </div>
                     </div>
                     <div class="paper-actions">
@@ -82,6 +87,18 @@
                     </div>
                 </div>
             `;
+        }
+
+        // 複製引用格式
+        function copyCitation(element, citation) {
+            navigator.clipboard.writeText(citation).then(() => {
+                element.classList.add('copy-success');
+                setTimeout(() => {
+                    element.classList.remove('copy-success');
+                }, 2000);
+            }).catch(err => {
+                console.error('複製失敗:', err);
+            });
         }
 
         // 切換摘要顯示
@@ -105,17 +122,23 @@
                     case 'year-asc':
                         return a.year - b.year;
                     case 'title':
-                        return a.title.localeCompare(b.title);
+                        return a.title.localeCompare(b.title, 'zh-TW');
                     default:
                         return 0;
                 }
             });
         }
 
+        // 渲染論文列表
+        function renderPapers(papers, sortType) {
+            const container = document.querySelector('.papers-container');
+            const sortedPapers = sortPapers(papers, sortType);
+            container.innerHTML = sortedPapers.map(createPaperWidget).join('');
+        }
+
         // 初始化頁面
         async function initializePage() {
             const papers = await loadPapersData();
-            const container = document.querySelector('.papers-container');
             
             // 初始排序（新到舊）
             renderPapers(papers, 'year-desc');
@@ -131,17 +154,11 @@
                 const filteredPapers = papers.filter(paper => 
                     paper.title.toLowerCase().includes(searchTerm) ||
                     paper.authors.join(' ').toLowerCase().includes(searchTerm) ||
+                    paper.keywords.join(' ').toLowerCase().includes(searchTerm) ||
                     paper.abstract.toLowerCase().includes(searchTerm)
                 );
                 renderPapers(filteredPapers, document.getElementById('sort-select').value);
             }, 300));
-        }
-
-        // 渲染論文列表
-        function renderPapers(papers, sortType) {
-            const container = document.querySelector('.papers-container');
-            const sortedPapers = sortPapers(papers, sortType);
-            container.innerHTML = sortedPapers.map(createPaperWidget).join('');
         }
 
         // 防抖動函數
