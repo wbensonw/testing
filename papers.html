@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="研究論文儀表板">
+    <title>研究論文儀表板</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="papers.css">
+</head>
+<body>
+    <div class="dashboard">
+        <header class="dashboard-header">
+            <h1 class="dashboard-title">研究論文儀表板</h1>
+        </header>
+
+        <div class="search-container">
+            <i class="ri-search-line search-icon"></i>
+            <input type="search" class="search-box" placeholder="搜尋論文..." aria-label="搜尋論文">
+        </div>
+
+        <div class="sort-container">
+            <label for="sort-select">排序方式：</label>
+            <select id="sort-select" class="sort-select">
+                <option value="year-desc">年份（新到舊）</option>
+                <option value="year-asc">年份（舊到新）</option>
+                <option value="title">標題</option>
+            </select>
+        </div>
+
+        <main class="papers-container">
+            <!-- 論文 widgets 將由 JavaScript 動態生成 -->
+        </main>
+    </div>
+
+    <script>
+        // 載入論文數據
+        async function loadPapersData() {
+            try {
+                const response = await fetch('papers.json');
+                const data = await response.json();
+                return data.papers;
+            } catch (error) {
+                console.error('載入論文數據失敗:', error);
+                return [];
+            }
+        }
+
+        // 創建論文 widget HTML
+        function createPaperWidget(paper) {
+            return `
+                <div class="paper-widget" data-year="${paper.year}">
+                    <div class="paper-content">
+                        <div class="paper-header">
+                            <div class="paper-year">${paper.year}</div>
+                            <h2 class="paper-title">${paper.title}</h2>
+                        </div>
+                        <div class="paper-meta">
+                            <div class="paper-authors">${paper.authors.join(', ')}</div>
+                            <div class="paper-journal">${paper.journal}</div>
+                        </div>
+                        <div class="paper-citation">
+                            <strong>引用格式 (APA):</strong>
+                            <p>${paper.citation}</p>
+                        </div>
+                        <div class="paper-abstract hidden">
+                            <strong>摘要:</strong>
+                            <p>${paper.abstract}</p>
+                        </div>
+                    </div>
+                    <div class="paper-actions">
+                        <button class="btn-more" onclick="toggleAbstract(this)">
+                            <i class="ri-add-line"></i>
+                            顯示摘要
+                        </button>
+                        <a href="${paper.url}" class="btn-link" target="_blank">
+                            <i class="ri-external-link-line"></i>
+                            查看論文
+                        </a>
+                    </div>
+                </div>
+            `;
+        }
+
+        // 切換摘要顯示
+        function toggleAbstract(button) {
+            const widget = button.closest('.paper-widget');
+            const abstract = widget.querySelector('.paper-abstract');
+            const isHidden = abstract.classList.contains('hidden');
+            
+            abstract.classList.toggle('hidden');
+            button.innerHTML = isHidden ? 
+                '<i class="ri-subtract-line"></i> 隱藏摘要' : 
+                '<i class="ri-add-line"></i> 顯示摘要';
+        }
+
+        // 排序論文
+        function sortPapers(papers, sortType) {
+            return [...papers].sort((a, b) => {
+                switch (sortType) {
+                    case 'year-desc':
+                        return b.year - a.year;
+                    case 'year-asc':
+                        return a.year - b.year;
+                    case 'title':
+                        return a.title.localeCompare(b.title);
+                    default:
+                        return 0;
+                }
+            });
+        }
+
+        // 初始化頁面
+        async function initializePage() {
+            const papers = await loadPapersData();
+            const container = document.querySelector('.papers-container');
+            
+            // 初始排序（新到舊）
+            renderPapers(papers, 'year-desc');
+
+            // 排序事件監聽
+            document.getElementById('sort-select').addEventListener('change', (e) => {
+                renderPapers(papers, e.target.value);
+            });
+
+            // 搜索事件監聽
+            document.querySelector('.search-box').addEventListener('input', debounce((e) => {
+                const searchTerm = e.target.value.toLowerCase();
+                const filteredPapers = papers.filter(paper => 
+                    paper.title.toLowerCase().includes(searchTerm) ||
+                    paper.authors.join(' ').toLowerCase().includes(searchTerm) ||
+                    paper.abstract.toLowerCase().includes(searchTerm)
+                );
+                renderPapers(filteredPapers, document.getElementById('sort-select').value);
+            }, 300));
+        }
+
+        // 渲染論文列表
+        function renderPapers(papers, sortType) {
+            const container = document.querySelector('.papers-container');
+            const sortedPapers = sortPapers(papers, sortType);
+            container.innerHTML = sortedPapers.map(createPaperWidget).join('');
+        }
+
+        // 防抖動函數
+        function debounce(func, wait) {
+            let timeout;
+            return function executedFunction(...args) {
+                const later = () => {
+                    clearTimeout(timeout);
+                    func(...args);
+                };
+                clearTimeout(timeout);
+                timeout = setTimeout(later, wait);
+            };
+        }
+
+        // 頁面載入時初始化
+        document.addEventListener('DOMContentLoaded', initializePage);
+    </script>
+</body>
+</html>
