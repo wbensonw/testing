@@ -1,0 +1,56 @@
+{
+    "notes": [
+        {
+            "id": "note1",
+            "title": "深度學習在自然語言處理中的應用研究",
+            "type": "文獻研究",
+            "date": "2024-03-20",
+            "keywords": ["深度學習", "自然語言處理", "機器學習", "AI"],
+            "content": {
+                "text": "本研究探討了深度學習在自然語言處理領域的最新發展。通過分析Transformer架構的演進，我們發現大型語言模型在多個任務上都展現出優異的性能。特別是在以下幾個方面...",
+                "images": [
+                    {
+                        "url": "images/transformer-architecture.png",
+                        "caption": "Transformer 架構圖"
+                    },
+                    {
+                        "url": "images/performance-comparison.png",
+                        "caption": "性能比較圖"
+                    }
+                ],
+                "tables": [
+                    {
+                        "title": "模型性能對比",
+                        "data": "..."
+                    }
+                ]
+            },
+            "wordCount": 2500,
+            "url": "/notes/deep-learning-nlp"
+        },
+        {
+            "id": "note2",
+            "title": "實驗設計：神經網絡在圖像識別中的應用",
+            "type": "實驗記錄",
+            "date": "2024-03-18",
+            "keywords": ["實驗設計", "神經網絡", "圖像識別", "CNN"],
+            "content": {
+                "text": "實驗目的：驗證改進後的CNN架構在低光照圖像識別任務中的表現。實驗設置包括以下步驟：1. 數據預處理...",
+                "images": [
+                    {
+                        "url": "images/experiment-setup.png",
+                        "caption": "實驗設置"
+                    }
+                ],
+                "tables": [
+                    {
+                        "title": "實驗參數設置",
+                        "data": "..."
+                    }
+                ]
+            },
+            "wordCount": 1800,
+            "url": "/notes/cnn-experiment"
+        }
+    ]
+}

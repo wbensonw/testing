@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>研究筆記系統</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="notes.css">
+</head>
+<body>
+    <div class="dashboard">
+        <header class="dashboard-header">
+            <div class="header-content">
+                <div class="header-left">
+                    <h1 class="dashboard-title">研究筆記系統</h1>
+                    <p class="dashboard-subtitle">記錄您的研究心得與想法</p>
+                </div>
+                <div class="header-right">
+                    <button class="header-btn btn-new-note">
+                        <i class="ri-add-line"></i>
+                        新增筆記
+                    </button>
+                </div>
+            </div>
+        </header>
+
+        <div class="search-container">
+            <i class="ri-search-line search-icon"></i>
+            <input type="search" class="search-box" placeholder="搜尋筆記..." aria-label="搜尋筆記">
+        </div>
+
+        <div class="type-filter" role="tablist">
+            <!-- 由 JavaScript 動態生成 -->
+        </div>
+
+        <main class="notes-container">
+            <!-- 由 JavaScript 動態生成 -->
+        </main>
+    </div>
+
+    <script>
+        // 載入筆記數據
+        async function loadNotesData() {
+            try {
+                const response = await fetch('notes.json');
+                const data = await response.json();
+                return data;
+            } catch (error) {
+                console.error('載入筆記數據失敗:', error);
+                return null;
+            }
+        }
+
+        // 創建筆記卡片
+        function createNoteCard(note) {
+            return `
+                <div class="note-card" data-type="${note.type}">
+                    <div class="note-header">
+                        <span class="note-type">${note.type}</span>
+                        <span class="note-date">${note.date}</span>
+                    </div>
+                    <h2 class="note-title">${note.title}</h2>
+                    <div class="note-keywords">
+                        ${note.keywords.map(keyword => 
+                            `<span class="keyword">${keyword}</span>`
+                        ).join('')}
+                    </div>
+                    <div class="note-preview">
+                        ${createPreviewContent(note)}
+                    </div>
+                    <div class="note-footer">
+                        <div class="note-meta">
+                            <span class="note-word-count">
+                                <i class="ri-file-text-line"></i>
+                                ${note.wordCount} 字
+                            </span>
+                            <span class="note-reading-time">
+                                <i class="ri-time-line"></i>
+                                閱讀時間 ${Math.ceil(note.wordCount / 400)} 分鐘
+                            </span>
+                        </div>
+                        <a href="${note.url}" class="note-link" target="_blank">
+                            查看完整內容
+                            <i class="ri-arrow-right-line"></i>
+                        </a>
+                    </div>
+                </div>
+            `;
+        }
+
+        // 創建預覽內容
+        function createPreviewContent(note) {
+            let preview = '';
+            
+            // 文字內容
+            if (note.content.text) {
+                preview += `<p class="preview-text">${note.content.text.slice(0, 200)}...</p>`;
+            }
+            
+            // 圖片預覽
+            if (note.content.images && note.content.images.length > 0) {
+                preview += `
+                    <div class="preview-images">
+                        ${note.content.images.slice(0, 2).map(img => 
+                            `<img src="${img.url}" alt="${img.caption}">`
+                        ).join('')}
+                        ${note.content.images.length > 2 ? 
+                            `<div class="more-images">+${note.content.images.length - 2}</div>` : 
+                            ''}
+                    </div>
+                `;
+            }
+            
+            // 表格預覽
+            if (note.content.tables && note.content.tables.length > 0) {
+                preview += `
+                    <div class="preview-table">
+                        <i class="ri-table-line"></i>
+                        包含 ${note.content.tables.length} 個表格
+                    </div>
+                `;
+            }
+            
+            return preview;
+        }
+
+        // 初始化頁面
+        async function initializePage() {
+            const data = await loadNotesData();
+            if (!data) return;
+
+            // 渲染類型過濾器
+            const filterContainer = document.querySelector('.type-filter');
+            const types = ['全部', ...new Set(data.notes.map(note => note.type))];
+            
+            filterContainer.innerHTML = types.map((type, index) => `
+                <button class="type-btn ${index === 0 ? 'active' : ''}" 
+                        data-type="${type}">
+                    ${type}
+                </button>
+            `).join('');
+
+            // 渲染筆記卡片
+            renderNotes(data.notes);
+
+            // 設置事件監聽器
+            setupEventListeners(data.notes);
+        }
+
+        // 渲染筆記
+        function renderNotes(notes) {
+            const container = document.querySelector('.notes-container');
+            container.innerHTML = notes.map(note => createNoteCard(note)).join('');
+        }
+
+        // 設置事件監聽器
+        function setupEventListeners(notes) {
+            // 類型過濾
+            document.querySelectorAll('.type-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    document.querySelectorAll('.type-btn').forEach(b => 
+                        b.classList.remove('active'));
+                    this.classList.add('active');
+                    
+                    const type = this.dataset.type;
+                    const filteredNotes = type === '全部' ? 
+                        notes : 
+                        notes.filter(note => note.type === type);
+                    
+                    renderNotes(filteredNotes);
+                });
+            });
+
+            // 搜索功能
+            const searchBox = document.querySelector('.search-box');
+            searchBox.addEventListener('input', debounce(function(e) {
+                const searchTerm = e.target.value.toLowerCase();
+                const filteredNotes = notes.filter(note => 
+                    note.title.toLowerCase().includes(searchTerm) ||
+                    note.keywords.some(k => k.toLowerCase().includes(searchTerm)) ||
+                    note.content.text.toLowerCase().includes(searchTerm)
+                );
+                renderNotes(filteredNotes);
+            }, 300));
+        }
+
+        // 防抖動函數
+        function debounce(func, wait) {
+            let timeout;
+            return function executedFunction(...args) {
+                const later = () => {
+                    clearTimeout(timeout);
+                    func(...args);
+                };
+                clearTimeout(timeout);
+                timeout = setTimeout(later, wait);
+            };
+        }
+
+        // 頁面載入時初始化
+        document.addEventListener('DOMContentLoaded', initializePage);
+    </script>
+</body>
+</html>
