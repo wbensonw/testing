@@ -153,6 +153,132 @@
     color: white;
 }
 
+/* 筆記內容頁樣式 */
+.note-content-page {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 2rem;
+    animation: fadeIn 0.5s ease-out;
+}
+
+.note-section {
+    background: white;
+    border-radius: 16px;
+    box-shadow: var(--shadow-md);
+    margin-bottom: 1.5rem;
+    overflow: hidden;
+    border: 1px solid var(--gray-200);
+    transition: var(--transition-bounce);
+}
+
+.note-section:hover {
+    box-shadow: var(--shadow-lg);
+}
+
+.note-section-header {
+    padding: 1.5rem;
+    background: var(--gray-50);
+    border-bottom: 1px solid var(--gray-200);
+}
+
+.note-section-content {
+    padding: 1.5rem;
+}
+
+.note-meta-info {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 1rem;
+}
+
+.section-title {
+    color: var(--gray-800);
+    font-size: 1.25rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.section-title i {
+    color: var(--primary);
+    font-size: 1.25rem;
+}
+
+.note-content-header {
+    margin-bottom: 2rem;
+}
+
+.note-content-back {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 1rem;
+    background: var(--gray-100);
+    border-radius: 100px;
+    color: var(--gray-600);
+    text-decoration: none;
+    font-size: 0.875rem;
+    transition: var(--transition-bounce);
+    margin-bottom: 1.5rem;
+}
+
+.note-content-back:hover {
+    background: var(--primary);
+    color: white;
+    transform: translateX(-4px);
+}
+
+.note-image {
+    border-radius: 8px;
+    overflow: hidden;
+    margin: 1.5rem 0;
+    box-shadow: var(--shadow-md);
+}
+
+.note-image img {
+    width: 100%;
+    height: auto;
+    display: block;
+    transition: transform 0.3s ease;
+}
+
+.note-image:hover img {
+    transform: scale(1.02);
+}
+
+.note-image figcaption {
+    padding: 0.75rem;
+    background: var(--gray-50);
+    color: var(--gray-600);
+    font-size: 0.875rem;
+    text-align: center;
+}
+
+.findings-list {
+    padding-left: 1.25rem;
+    list-style: none;
+}
+
+.findings-list li {
+    position: relative;
+    padding: 0.5rem 0;
+    color: var(--gray-700);
+}
+
+.findings-list li::before {
+    content: '';
+    position: absolute;
+    left: -1.25rem;
+    top: 1rem;
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--primary);
+}
+
 /* 響應式設計 */
 @media (max-width: 768px) {
     .note-header,
@@ -170,73 +296,34 @@
         width: 100%;
         height: 200px;
     }
+
+    .note-content-page {
+        padding: 1rem;
+    }
+
+    .note-meta-info {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.5rem;
+    }
+
+    .section-title {
+        font-size: 1.125rem;
+    }
+
+    .note-image figcaption {
+        font-size: 0.8rem;
+    }
 }
 
-/* 返回連結 */
-.back-link {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.5rem;
-    color: white;
-    text-decoration: none;
-    font-size: 0.875rem;
-    margin-top: 0.5rem;
-    opacity: 0.8;
-    transition: var(--transition-base);
-}
-
-.back-link:hover {
-    opacity: 1;
-}
-
-/* 完整筆記樣式 */
-.note-full {
-    background: white;
-    border-radius: 16px;
-    box-shadow: var(--shadow-md);
-    margin: 2rem auto;
-    max-width: 800px;
-    padding: 2rem;
-}
-
-.note-body {
-    color: var(--gray-800);
-    line-height: 1.8;
-    font-size: 1.1rem;
-}
-
-.note-body h2 {
-    color: var(--gray-900);
-    font-size: 1.5rem;
-    margin: 2rem 0 1rem;
-}
-
-.note-body p {
-    margin-bottom: 1rem;
-}
-
-.note-body figure {
-    margin: 2rem 0;
-}
-
-.note-body img {
-    width: 100%;
-    border-radius: 8px;
-    box-shadow: var(--shadow-md);
-}
-
-.note-body figcaption {
-    color: var(--gray-600);
-    font-size: 0.875rem;
-    text-align: center;
-    margin-top: 0.5rem;
-}
-
-.note-body ul {
-    margin: 1rem 0;
-    padding-left: 1.5rem;
-}
-
-.note-body li {
-    margin-bottom: 0.5rem;
+/* 動畫效果 */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
