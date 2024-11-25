@@ -171,3 +171,72 @@
         height: 200px;
     }
 }
+
+/* 返回連結 */
+.back-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: white;
+    text-decoration: none;
+    font-size: 0.875rem;
+    margin-top: 0.5rem;
+    opacity: 0.8;
+    transition: var(--transition-base);
+}
+
+.back-link:hover {
+    opacity: 1;
+}
+
+/* 完整筆記樣式 */
+.note-full {
+    background: white;
+    border-radius: 16px;
+    box-shadow: var(--shadow-md);
+    margin: 2rem auto;
+    max-width: 800px;
+    padding: 2rem;
+}
+
+.note-body {
+    color: var(--gray-800);
+    line-height: 1.8;
+    font-size: 1.1rem;
+}
+
+.note-body h2 {
+    color: var(--gray-900);
+    font-size: 1.5rem;
+    margin: 2rem 0 1rem;
+}
+
+.note-body p {
+    margin-bottom: 1rem;
+}
+
+.note-body figure {
+    margin: 2rem 0;
+}
+
+.note-body img {
+    width: 100%;
+    border-radius: 8px;
+    box-shadow: var(--shadow-md);
+}
+
+.note-body figcaption {
+    color: var(--gray-600);
+    font-size: 0.875rem;
+    text-align: center;
+    margin-top: 0.5rem;
+}
+
+.note-body ul {
+    margin: 1rem 0;
+    padding-left: 1.5rem;
+}
+
+.note-body li {
+    margin-bottom: 0.5rem;
+}

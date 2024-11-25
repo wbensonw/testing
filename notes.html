@@ -38,7 +38,7 @@
         // 載入筆記數據
         async function loadNotesData() {
             try {
-                const response = await fetch('notes.json');
+                const response = await fetch('notes/index.json');
                 const data = await response.json();
                 return data;
             } catch (error) {
@@ -65,7 +65,7 @@
                         ${createPreviewContent(note)}
                     </div>
                     <div class="note-footer">
-                        <a href="${note.url}" class="note-link" target="_blank">
+                        <a href="notes/${note.id}.html" class="note-link">
                             查看完整內容
                             <i class="ri-arrow-right-line"></i>
                         </a>
@@ -78,20 +78,20 @@
         function createPreviewContent(note) {
             let preview = '';
             
-            // 文字內容
-            if (note.content.text) {
-                preview += `<p class="preview-text">${note.content.text.slice(0, 200)}...</p>`;
+            // 文字預覽
+            if (note.preview) {
+                preview += `<p class="preview-text">${note.preview}</p>`;
             }
             
             // 圖片預覽
-            if (note.content.images && note.content.images.length > 0) {
+            if (note.thumbnails && note.thumbnails.length > 0) {
                 preview += `
                     <div class="preview-images">
-                        ${note.content.images.slice(0, 2).map(img => 
-                            `<img src="${img.url}" alt="${img.caption}">`
+                        ${note.thumbnails.slice(0, 2).map(url => 
+                            `<img src="${url}" alt="預覽圖片">`
                         ).join('')}
-                        ${note.content.images.length > 2 ? 
-                            `<div class="more-images">+${note.content.images.length - 2}</div>` : 
+                        ${note.thumbnails.length > 2 ? 
+                            `<div class="more-images">+${note.thumbnails.length - 2}</div>` : 
                             ''}
                     </div>
                 `;
@@ -154,7 +154,7 @@
                 const filteredNotes = notes.filter(note => 
                     note.title.toLowerCase().includes(searchTerm) ||
                     note.keywords.some(k => k.toLowerCase().includes(searchTerm)) ||
-                    note.content.text.toLowerCase().includes(searchTerm)
+                    note.preview.toLowerCase().includes(searchTerm)
                 );
                 renderNotes(filteredNotes);
             }, 300));
