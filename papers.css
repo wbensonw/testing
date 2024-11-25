@@ -1,277 +1,206 @@
-/* 基礎變量擴充 */
-:root {
-    /* 漸層背景 */
-    --gradient-primary: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
-    --gradient-dark: linear-gradient(135deg, var(--gray-700) 0%, var(--gray-800) 100%);
-    
-    /* 陰影擴充 */
-    --shadow-hover: 0 12px 20px -5px rgba(0, 0, 0, 0.1);
-    --shadow-button: 0 4px 8px -2px rgba(255, 153, 102, 0.2);
-    
-    /* 動畫曲線 */
-    --bounce: cubic-bezier(0.34, 1.56, 0.64, 1);
-}
-
-/* 整體容器美化 */
-.dashboard {
-    background: var(--gray-50);
-    min-height: 100vh;
-    padding: 2rem;
-    background-image: 
-        radial-gradient(circle at 10% 20%, rgba(255, 153, 102, 0.05) 0%, transparent 20%),
-        radial-gradient(circle at 90% 80%, rgba(255, 153, 102, 0.05) 0%, transparent 20%);
-}
-
-/* 標題區域強化 */
-.dashboard-header {
-    background: var(--gradient-primary);
-    padding: 2.5rem 3rem;
-    border-radius: 20px;
-    margin-bottom: 2.5rem;
-    position: relative;
-    overflow: hidden;
-}
-
-.dashboard-title {
-    color: white;
-    font-size: 2rem;
-    letter-spacing: -0.02em;
-    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-}
-
-/* 搜索框美化 */
-.search-container {
-    position: relative;
-    margin-bottom: 2.5rem;
-}
-
-.search-box {
-    width: 100%;
-    max-width: 600px;
-    padding: 1.25rem 1.5rem 1.25rem 3.5rem;
-    border: 2px solid var(--gray-200);
-    border-radius: 16px;
-    font-size: 1.1rem;
-    background: white;
-    transition: all 0.3s var(--bounce);
-    box-shadow: var(--shadow-sm);
-}
-
-.search-box:focus {
-    border-color: var(--primary);
-    box-shadow: 0 0 0 4px rgba(255, 153, 102, 0.15);
-    transform: translateY(-2px);
-}
-
-.search-icon {
-    left: 1.25rem;
-    color: var(--primary);
-    font-size: 1.5rem;
-}
-
-/* 排序選擇器美化 */
+/* 論文頁面特定樣式 */
 .sort-container {
-    background: white;
-    padding: 1rem 1.5rem;
-    border-radius: 12px;
-    box-shadow: var(--shadow-sm);
-    margin-bottom: 2.5rem;
+    margin-bottom: 2rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
 }
 
 .sort-select {
-    padding: 0.75rem 1.25rem;
-    border-radius: 10px;
+    padding: 0.5rem 1rem;
     border: 2px solid var(--gray-200);
-    background: white;
-    font-weight: 500;
-    min-width: 200px;
+    border-radius: 8px;
+    background-color: var(--gray-100);
+    color: var(--gray-800);
+    font-size: 0.875rem;
+    cursor: pointer;
 }
 
-/* 論文卡片美化 */
+.sort-select:focus {
+    outline: none;
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px rgba(255, 153, 102, 0.1);
+}
+
+.papers-container {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
 .paper-widget {
-    background: white;
-    border-radius: 20px;
+    background: var(--gray-100);
+    border-radius: 16px;
     box-shadow: var(--shadow-md);
-    transition: all 0.4s var(--bounce);
+    transition: var(--transition-base);
+    border: 2px solid transparent;
+    overflow: hidden;
 }
 
 .paper-widget:hover {
-    transform: translateY(-4px) scale(1.01);
-    box-shadow: var(--shadow-hover);
+    border-color: var(--primary);
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-lg);
+}
+
+.paper-content {
+    padding: 1.5rem;
+}
+
+.paper-header {
+    margin-bottom: 1rem;
 }
 
 .paper-year {
-    background: var(--gradient-primary);
-    padding: 0.5rem 1rem;
-    font-weight: 600;
-    box-shadow: var(--shadow-button);
+    display: inline-block;
+    padding: 0.25rem 0.75rem;
+    background-color: var(--primary);
+    color: white;
+    border-radius: 100px;
+    font-size: 0.875rem;
+    font-weight: 500;
+    margin-bottom: 0.5rem;
 }
 
 .paper-title {
-    font-size: 1.4rem;
-    line-height: 1.4;
+    font-size: 1.25rem;
+    font-weight: 600;
     color: var(--gray-800);
-    margin: 1rem 0;
+    margin-bottom: 0.5rem;
+    line-height: 1.4;
 }
 
-/* 關鍵字標籤美化 */
+.paper-meta {
+    display: flex;
+    gap: 1rem;
+    color: var(--gray-600);
+    font-size: 0.875rem;
+    margin-bottom: 1rem;
+}
+
 .paper-keywords {
-    gap: 0.75rem;
-    margin: 1.25rem 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
 }
 
 .keyword {
-    background: var(--gray-100);
-    color: var(--primary);
-    padding: 0.5rem 1rem;
+    padding: 0.25rem 0.75rem;
+    background-color: var(--gray-200);
+    color: var(--gray-700);
     border-radius: 100px;
-    font-weight: 600;
-    font-size: 0.8rem;
-    transition: all 0.3s ease;
-    border: 1px solid var(--gray-200);
+    font-size: 0.75rem;
+    font-weight: 500;
 }
 
-.keyword:hover {
-    background: var(--primary);
-    color: white;
-    transform: translateY(-1px);
-}
-
-/* 摘要區域美化 */
 .paper-abstract {
-    background: var(--gray-50);
-    padding: 1.5rem;
-    border-radius: 12px;
-    margin: 1.25rem 0;
-    position: relative;
-    border-left: 4px solid var(--primary);
+    font-size: 0.925rem;
+    line-height: 1.6;
+    color: var(--gray-700);
+    margin-bottom: 1rem;
+    padding: 1rem;
+    background: var(--gray-200);
+    border-radius: 8px;
 }
 
-/* 引用格式區域美化 */
+.paper-abstract.hidden {
+    display: none;
+}
+
 .paper-citation {
-    background: var(--gray-50);
-    padding: 1.5rem;
-    border-radius: 12px;
-    position: relative;
     cursor: pointer;
-    border: 1px solid var(--gray-200);
+    position: relative;
+    padding: 1rem;
+    background: var(--gray-200);
+    border-radius: 8px;
+    font-size: 0.875rem;
+    margin-top: 1rem;
+    transition: var(--transition-base);
 }
 
 .paper-citation::after {
     content: '點擊複製';
-    background: var(--gray-800);
-    color: white;
-    padding: 0.5rem 1rem;
-    border-radius: 100px;
     position: absolute;
-    right: 1.5rem;
+    right: 1rem;
     top: 50%;
     transform: translateY(-50%);
     font-size: 0.75rem;
+    color: var(--gray-500);
     opacity: 0;
-    transition: all 0.3s ease;
+    transition: var(--transition-base);
+}
+
+.paper-citation:hover {
+    background: var(--gray-300);
 }
 
 .paper-citation:hover::after {
     opacity: 1;
-    transform: translateY(-50%) translateX(-10px);
 }
 
 .copy-success::after {
     content: '已複製！';
-    background: var(--primary);
+    color: var(--primary);
+    opacity: 1 !important;
 }
 
-/* 按鈕美化 */
 .paper-actions {
-    padding: 1.5rem;
+    display: flex;
     gap: 1rem;
-    background: var(--gray-50);
-    border-top: 1px solid var(--gray-200);
+    padding: 1rem 1.5rem;
+    background: var(--gray-200);
+}
+
+.btn-more,
+.btn-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 1rem;
+    border-radius: 8px;
+    font-size: 0.875rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: var(--transition-base);
 }
 
 .btn-more {
-    padding: 0.75rem 1.5rem;
-    border-radius: 10px;
-    font-weight: 600;
-    transition: all 0.3s var(--bounce);
+    background: none;
+    border: none;
+    color: var(--gray-600);
 }
 
 .btn-more:hover {
-    background: var(--gray-200);
-    transform: translateY(-2px);
+    background: var(--gray-300);
+    color: var(--gray-800);
 }
 
 .btn-link {
-    padding: 0.75rem 1.5rem;
-    border-radius: 10px;
-    font-weight: 600;
-    background: var(--gradient-primary);
-    box-shadow: var(--shadow-button);
-    transition: all 0.3s var(--bounce);
+    background: var(--primary);
+    color: white;
+    text-decoration: none;
+    border: none;
 }
 
 .btn-link:hover {
-    transform: translateY(-2px);
-    box-shadow: var(--shadow-hover);
+    background: var(--primary-dark);
 }
 
-/* 載入動畫美化 */
-@keyframes shimmer {
-    0% {
-        transform: translateX(-100%) skewX(-15deg);
-    }
-    100% {
-        transform: translateX(100%) skewX(-15deg);
-    }
-}
-
-/* 深色模式適配 */
-@media (prefers-color-scheme: dark) {
-    .dashboard {
-        background: var(--gray-900);
-    }
-
-    .paper-widget {
-        background: var(--gray-800);
-        border: 1px solid var(--gray-700);
-    }
-
-    .search-box,
-    .sort-select {
-        background: var(--gray-800);
-        border-color: var(--gray-700);
-        color: white;
-    }
-
-    .keyword {
-        background: var(--gray-700);
-        border-color: var(--gray-600);
-    }
-
-    .paper-abstract,
-    .paper-citation {
-        background: var(--gray-700);
-    }
-}
-
-/* 響應式美化 */
+/* 響應式設計 */
 @media (max-width: 768px) {
-    .dashboard {
-        padding: 1rem;
+    .paper-meta {
+        flex-direction: column;
+        gap: 0.5rem;
     }
-
-    .dashboard-header {
-        padding: 2rem;
-        border-radius: 16px;
+    
+    .paper-actions {
+        flex-direction: column;
     }
-
-    .paper-widget {
-        border-radius: 16px;
-    }
-
-    .search-box {
-        font-size: 1rem;
-        padding: 1rem 1rem 1rem 3rem;
+    
+    .btn-more,
+    .btn-link {
+        width: 100%;
+        justify-content: center;
     }
 }
