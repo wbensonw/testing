@@ -17,15 +17,8 @@
                         "url": "images/performance-comparison.png",
                         "caption": "性能比較圖"
                     }
-                ],
-                "tables": [
-                    {
-                        "title": "模型性能對比",
-                        "data": "..."
-                    }
                 ]
             },
-            "wordCount": 2500,
             "url": "/notes/deep-learning-nlp"
         },
         {
@@ -41,15 +34,8 @@
                         "url": "images/experiment-setup.png",
                         "caption": "實驗設置"
                     }
-                ],
-                "tables": [
-                    {
-                        "title": "實驗參數設置",
-                        "data": "..."
-                    }
                 ]
             },
-            "wordCount": 1800,
             "url": "/notes/cnn-experiment"
         }
     ]

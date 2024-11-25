@@ -17,12 +17,6 @@
                     <h1 class="dashboard-title">研究筆記系統</h1>
                     <p class="dashboard-subtitle">記錄您的研究心得與想法</p>
                 </div>
-                <div class="header-right">
-                    <button class="header-btn btn-new-note">
-                        <i class="ri-add-line"></i>
-                        新增筆記
-                    </button>
-                </div>
             </div>
         </header>
 
@@ -71,16 +65,6 @@
                         ${createPreviewContent(note)}
                     </div>
                     <div class="note-footer">
-                        <div class="note-meta">
-                            <span class="note-word-count">
-                                <i class="ri-file-text-line"></i>
-                                ${note.wordCount} 字
-                            </span>
-                            <span class="note-reading-time">
-                                <i class="ri-time-line"></i>
-                                閱讀時間 ${Math.ceil(note.wordCount / 400)} 分鐘
-                            </span>
-                        </div>
                         <a href="${note.url}" class="note-link" target="_blank">
                             查看完整內容
                             <i class="ri-arrow-right-line"></i>
@@ -109,16 +93,6 @@
                         ${note.content.images.length > 2 ? 
                             `<div class="more-images">+${note.content.images.length - 2}</div>` : 
                             ''}
-                    </div>
-                `;
-            }
-            
-            // 表格預覽
-            if (note.content.tables && note.content.tables.length > 0) {
-                preview += `
-                    <div class="preview-table">
-                        <i class="ri-table-line"></i>
-                        包含 ${note.content.tables.length} 個表格
                     </div>
                 `;
             }
