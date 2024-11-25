@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="網頁儀表板 - 快速訪問您常用的網站">
-    <meta name="theme-color" content="#FF9966">
     <title>網頁儀表板</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
@@ -30,114 +29,166 @@
         </main>
     </div>
 
-    <script type="module">
-        // 載入 widgets 數據
-        async function loadWidgetsData() {
+    <script>
+        // 分類映射表
+        const categoryMapping = {
+            'tools': '工具',
+            'work': '工作',
+            'study': '學習',
+            'entertainment': '娛樂',
+            'life': '生活'
+        };
+
+        // 載入和初始化儀表板
+        async function initializeDashboard() {
             try {
                 const response = await fetch('widgets.json');
-                return await response.json();
+                if (!response.ok) {
+                    throw new Error('無法載入 widgets 數據');
+                }
+                const data = await response.json();
+
+                // 設置標題
+                document.title = data.settings.title;
+                document.querySelector('.dashboard-title').textContent = data.settings.title;
+
+                // 渲染分類按鈕
+                renderCategories(data.categories);
+
+                // 渲染 widgets
+                renderWidgets(data.widgets);
+
+                // 設置事件監聽器
+                setupEventListeners();
+
             } catch (error) {
-                console.error('Error loading widgets data:', error);
-                return null;
+                console.error('初始化錯誤:', error);
             }
         }
 
-        // 創建 widget 元素
-        function createWidgetElement(widget) {
-            return `
-                <div class="widget" tabindex="0" role="button" 
-                     data-id="${widget.id}" 
-                     data-categories="${widget.categories.join(',')}">
-                    <div class="widget-header">
-                        <div class="widget-icon">
-                            <i class="${widget.icon}"></i>
-                        </div>
-                        <div class="widget-title">${widget.title}</div>
-                    </div>
-                    <div class="widget-content">
-                        <div class="widget-description">${widget.description}</div>
-                    </div>
-                    <div class="widget-footer">${widget.url}</div>
-                </div>
-            `;
-        }
-
-        // 創建分類按鈕
-        function createCategoryButton(category, isActive = false) {
-            return `
-                <button class="category-btn ${isActive ? 'active' : ''}" 
-                        role="tab" 
-                        aria-selected="${isActive}"
+        // 渲染分類按鈕
+        function renderCategories(categories) {
+            const filterContainer = document.querySelector('.category-filter');
+            const buttonsHTML = categories.map((category, index) => `
+                <button class="category-btn ${index === 0 ? 'active' : ''}" 
+                        role="tab"
+                        aria-selected="${index === 0}"
                         data-category="${category.id}">
                     <i class="${category.icon}"></i>
                     ${category.name}
                 </button>
-            `;
+            `).join('');
+            
+            filterContainer.innerHTML = buttonsHTML;
         }
 
-        // 初始化儀表板
-        async function initializeDashboard() {
-            const data = await loadWidgetsData();
-            if (!data) return;
-
-            // 設置標題和主題
-            document.title = data.settings.title;
-            document.querySelector('.dashboard-title').textContent = data.settings.title;
-            
-            // 生成分類按鈕
-            const categoryFilter = document.querySelector('.category-filter');
-            categoryFilter.innerHTML = data.categories
-                .map((category, index) => createCategoryButton(category, index === 0))
-                .join('');
-
-            // 生成 widgets
+        // 渲染 widgets
+        function renderWidgets(widgets) {
             const container = document.querySelector('.grid-container');
-            const sortedWidgets = data.widgets.sort((a, b) => a.priority - b.priority);
-            container.innerHTML = sortedWidgets.map(createWidgetElement).join('');
+            const widgetsHTML = widgets
+                .sort((a, b) => a.priority - b.priority)
+                .map(widget => `
+                    <div class="widget" 
+                         data-id="${widget.id}"
+                         data-categories="${widget.categories.join(',')}">
+                        <div class="widget-header">
+                            <div class="widget-icon">
+                                <i class="${widget.icon}"></i>
+                            </div>
+                            <div class="widget-title">${widget.title}</div>
+                        </div>
+                        <div class="widget-content">
+                            <div class="widget-description">${widget.description}</div>
+                        </div>
+                        <div class="widget-footer">${widget.url}</div>
+                    </div>
+                `).join('');
 
-            // 添加事件監聽器
-            setupEventListeners(data);
+            container.innerHTML = widgetsHTML;
         }
 
         // 設置事件監聽器
-        function setupEventListeners(data) {
-            // 搜索功能
-            const searchBox = document.querySelector('.search-box');
-            searchBox.addEventListener('input', debounce((e) => {
-                const searchTerm = e.target.value.toLowerCase();
-                filterWidgets(searchTerm, data);
-            }, 300));
-
-            // 分類過濾
-            const categoryButtons = document.querySelectorAll('.category-btn');
-            categoryButtons.forEach(btn => {
-                btn.addEventListener('click', () => {
-                    categoryButtons.forEach(b => {
+        function setupEventListeners() {
+            // 分類按鈕點擊
+            document.querySelectorAll('.category-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    // 更新按鈕狀態
+                    document.querySelectorAll('.category-btn').forEach(b => {
                         b.classList.remove('active');
                         b.setAttribute('aria-selected', 'false');
                     });
-                    btn.classList.add('active');
-                    btn.setAttribute('aria-selected', 'true');
-                    
-                    const category = btn.dataset.category;
-                    filterWidgetsByCategory(category, data);
+                    this.classList.add('active');
+                    this.setAttribute('aria-selected', 'true');
+
+                    // 過濾 widgets
+                    filterWidgets(this.dataset.category);
                 });
             });
+
+            // 搜索功能
+            const searchBox = document.querySelector('.search-box');
+            searchBox.addEventListener('input', debounce(function(e) {
+                const searchTerm = e.target.value.toLowerCase();
+                filterBySearch(searchTerm);
+            }, 300));
 
             // Widget 點擊
             document.querySelectorAll('.widget').forEach(widget => {
-                widget.addEventListener('click', () => {
-                    const url = widget.querySelector('.widget-footer').textContent;
+                widget.addEventListener('click', function() {
+                    const url = this.querySelector('.widget-footer').textContent;
                     window.open(`https://${url}`, '_blank', 'noopener,noreferrer');
                 });
             });
+        }
 
-            // 鍵盤快捷鍵
-            document.addEventListener('keydown', (e) => {
-                if (e.key === '/' && !e.target.matches('input, textarea')) {
-                    e.preventDefault();
-                    searchBox.focus();
+        // 過濾 widgets
+        function filterWidgets(categoryId) {
+            const widgets = document.querySelectorAll('.widget');
+
+            widgets.forEach(widget => {
+                if (categoryId === 'all') {
+                    showWidgetWithAnimation(widget);
+                    return;
                 }
+
+                const widgetCategories = widget.dataset.categories.split(',');
+                const categoryName = categoryMapping[categoryId];
+                const shouldShow = widgetCategories.includes(categoryName);
+
+                if (shouldShow) {
+                    showWidgetWithAnimation(widget);
+                } else {
+                    widget.style.display = 'none';
+                }
+            });
+        }
+
+        // 搜索過濾
+        function filterBySearch(searchTerm) {
+            const widgets = document.querySelectorAll('.widget');
+            
+            widgets.forEach(widget => {
+                const title = widget.querySelector('.widget-title').textContent.toLowerCase();
+                const description = widget.querySelector('.widget-description').textContent.toLowerCase();
+                const shouldShow = title.includes(searchTerm) || description.includes(searchTerm);
+
+                if (shouldShow) {
+                    showWidgetWithAnimation(widget);
+                } else {
+                    widget.style.display = 'none';
+                }
+            });
+        }
+
+        // 顯示 widget 動畫
+        function showWidgetWithAnimation(widget) {
+            widget.style.display = '';
+            widget.classList.add('fade-enter');
+            requestAnimationFrame(() => {
+                widget.classList.add('fade-enter-active');
+                setTimeout(() => {
+                    widget.classList.remove('fade-enter', 'fade-enter-active');
+                }, 300);
             });
         }
 
@@ -154,48 +205,7 @@
             };
         }
 
-        // 根據搜索詞過濾 widgets
-        function filterWidgets(searchTerm, data) {
-            const widgets = document.querySelectorAll('.widget');
-            widgets.forEach(widget => {
-                const title = widget.querySelector('.widget-title').textContent.toLowerCase();
-                const description = widget.querySelector('.widget-description').textContent.toLowerCase();
-                const isVisible = title.includes(searchTerm) || description.includes(searchTerm);
-                
-                widget.style.display = isVisible ? '' : 'none';
-                if (isVisible) {
-                    widget.classList.add('fade-enter');
-                    requestAnimationFrame(() => {
-                        widget.classList.add('fade-enter-active');
-                        setTimeout(() => {
-                            widget.classList.remove('fade-enter', 'fade-enter-active');
-                        }, 300);
-                    });
-                }
-            });
-        }
-
-        // 根據分類過濾 widgets
-        function filterWidgetsByCategory(categoryId, data) {
-            const widgets = document.querySelectorAll('.widget');
-            widgets.forEach(widget => {
-                const categories = widget.dataset.categories.split(',');
-                const shouldShow = categoryId === 'all' || categories.includes(categoryId);
-                
-                widget.style.display = shouldShow ? '' : 'none';
-                if (shouldShow) {
-                    widget.classList.add('fade-enter');
-                    requestAnimationFrame(() => {
-                        widget.classList.add('fade-enter-active');
-                        setTimeout(() => {
-                            widget.classList.remove('fade-enter', 'fade-enter-active');
-                        }, 300);
-                    });
-                }
-            });
-        }
-
-        // 初始化
+        // 頁面載入時初始化
         document.addEventListener('DOMContentLoaded', initializeDashboard);
     </script>
 </body>
